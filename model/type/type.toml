@@ -1,0 +1,3 @@
+[train]
+name = "LeastAI"
+model_type = "llmt-1.0B"
