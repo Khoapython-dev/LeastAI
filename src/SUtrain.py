@@ -38,8 +38,8 @@ if not os.path.exists(sp_model_path):
     spm.SentencePieceTrainer.train(
         input="tokenizer/tmp.txt",
         model_prefix=f"tokenizer/{modelType}_spm",
-        vocab_size=8000,  # Giảm bớt cho nhẹ
-        character_coverage=0.9995,
+        vocab_size=200000,  # Giảm bớt cho nhẹ
+        character_coverage=1,
         model_type="bpe"
     )
 
@@ -54,7 +54,7 @@ def decode(ids):
 
 # ===== 4. Model =====
 class TinyChat(nn.Module):
-    def __init__(self, vocab_size, hidden=64):
+    def __init__(self, vocab_size, hidden=2048):
         super().__init__()
         self.embed = nn.Embedding(vocab_size, hidden)
         self.rnn = nn.GRU(hidden, hidden, batch_first=True)
@@ -83,7 +83,7 @@ def make_context(prompt, response):
     return f"[CONTEXT] {prompt.strip()} [REPLY] {response.strip()}"
 
 # ===== 7. Train =====
-epochs = 1000
+epochs = 10000
 print(Fore.CYAN + f"🚀 Training TinyChat_v2 ({modelType})...")
 
 for epoch in range(epochs):
@@ -124,7 +124,7 @@ torch.save(model.state_dict(), f"database/{modelType}/TinyChat_v2_{modelType}.pt
 config_data = {
     "model": {
         "vocab_size": vocab_size,
-        "hidden_size": 64,
+        "hidden_size": 2048,
         "type": modelType,
         "tokenizer": sp_model_path
     }
